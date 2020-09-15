@@ -30,12 +30,12 @@ class PlayGame {
       ctx.result(ctx.body());
     });
 
-    // Start a New Game
+    // Redirect to tic tac toe board.
     app.get("/newgame", ctx -> {
       ctx.redirect("/tictactoe.html");
     });
     
-
+    // Start game, creating player 1 and game board.
     app.post("/startgame", ctx -> {
       char type1 = ctx.req.getParameter("type").charAt(0);
       Player p1 = new Player(type1, 1);
@@ -43,7 +43,7 @@ class PlayGame {
       ctx.result(game.getBoard());
     });
 
-    
+    // Player 2 joins game and game begins.
     app.get("/joingame", ctx -> {
       char type2;
       if (game.getP1Type() == 'X') {
@@ -58,6 +58,8 @@ class PlayGame {
       sendGameBoardToAllPlayers(game.getBoard());
     });
     
+    
+    // Player 1 moves.
     app.post("/move/1", ctx -> {
       int x = Integer.parseInt(ctx.req.getParameter("x"));
       int y = Integer.parseInt(ctx.req.getParameter("y"));
@@ -68,6 +70,7 @@ class PlayGame {
       System.out.println("Sent board to all players");
     });
     
+    // Player 2 moves.
     app.post("/move/2", ctx -> {
       int x = Integer.parseInt(ctx.req.getParameter("x"));
       int y = Integer.parseInt(ctx.req.getParameter("y"));

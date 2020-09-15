@@ -8,22 +8,28 @@ public class Move {
 
   private int moveY;
   
+  /**
+   * Constructs an instance of a "move".
+   * @param p the player who made the move
+   * @param x the x position of the move
+   * @param y the y position of the move
+   */
   public Move(Player p, int x, int y) {
-	  player = p;
-	  moveX = x;
-	  moveY = y;
+    player = p;
+    moveX = x;
+    moveY = y;
   }
-  
+ 
   public int getMoveX() {
-	  return moveX;
+    return moveX;
   }
   
   public int getMoveY() {
-	  return moveY;
+    return moveY;
   }
   
   public Player getPlayer() {
-	  return player;
+    return player;
   }
 
 }

@@ -17,6 +17,12 @@ public class GameBoard {
     
   private boolean isDraw;
   
+  /**
+   * Creates an instance of a gameboard
+   * with player 1. Creates an empty board
+   * with no winner or draw yet, and with 
+   * the turn starting with player 1.
+   */
   public GameBoard(Player p) {
     p1 = p;
     gameStarted = false;
@@ -42,6 +48,10 @@ public class GameBoard {
     return p2;
   }
   
+  /**
+   * Returns all attributes of GameBoard
+   * as a json string.
+   */
   public String getBoard() {
     Gson gson = new Gson();
     String json = gson.toJson(this);
@@ -52,6 +62,14 @@ public class GameBoard {
     gameStarted = true;
   }
   
+  /**
+   * Checks for a valid move and returns a message.
+   * If not a valid move, returns a Message with the
+   * corresponding error code and message to display.
+   * If move is valid, returns a Message indicating the
+   * move is valid. Also checks if the player has won the
+   * game or if the game is a draw.
+   */
   public Message move(Move move) {
     Message message;
     Player p = move.getPlayer();
@@ -76,6 +94,12 @@ public class GameBoard {
     return message;
   }
 
+  /**
+   * Checks rows, columns, and diagonals associated
+   * with a certain move to see if a player has won
+   * the game. If there are no wins, it calls another
+   * function to check if there is a draw.
+   */
   public void checkWin(Player p, int x, int y) {
     int id = p.getId();
     char type = p.getType();
@@ -92,56 +116,66 @@ public class GameBoard {
       winner = id;
       return;
     }
+    
+    // check column
+    win = true;
+    for (int i = 0; i < 3; i++) {
+      if (boardState[i][y] != type) {
+        win = false;
+        break;
+      }
+    }
+    if (win) {
+      winner = id;
+      return;
+    }
 
-// check column
-win = true;
-for (int i = 0; i < 3; i++) {
-	if (boardState[i][y] != type) {
-		win = false;
-		break;
-	}
-}
-if (win) {
-	winner = id;
-	return;
-}
+    // check first diagonal (\)
+    win = true;
+    for (int i = 0; i < 3; i++) {
+      if (boardState[i][i] != type) {
+        win = false;
+        break;
+      }
+    }
+    if (win) {
+      winner = id;
+      return;
+    }
+    
+    // check second diagonal (/)
+    win = true;
+    for (int i = 0; i < 3; i++) {
+      if (boardState[i][3 - i - 1] != type) {
+        win = false;
+        break;
+      }
+    }
+    if (win) {
+      winner = id;
+      return;
+    }
+    
+    // If no wins, check for a draw
+    this.checkDraw();
+  }
 
-win = true;
-for (int i = 0; i < 3; i++) {
-	if (boardState[i][i] != type) {
-		win = false;
-		break;
-	}
-}
-if (win) {
-	winner = id;
-	return;
-}
-
-// check forward diagonal
-	win = true;
-	for (int i = 0; i < 3; i++) {
-		if (boardState[i][3 - i - 1] != type) {
-			win = false;
-			break;
-		}
-	}
-	if (win) {
-		winner = id;
-		return;
-	}
-	this.checkDraw();
-}
-
-public void checkDraw() {
-	for (int i = 0; i < 3; i++) {
-		for (int j = 0; j < 3; j++) {
-			if (boardState[i][j] == 0) {
-				return;
-			}
-		}
-	}
-	isDraw = true;
-}
+  /**
+   * Checks if all cells are filled
+   * when no players have won to determine
+   * if the game is a draw.
+   * If there is a draw, it changes the
+   * isDraw variable to true.
+   */
+  public void checkDraw() {
+    for (int i = 0; i < 3; i++) {
+      for (int j = 0; j < 3; j++) {
+        if (boardState[i][j] == 0) {
+          return;
+        }
+      }
+    }
+    isDraw = true;
+  }
 
 }

@@ -9,7 +9,7 @@ import models.Move;
 import models.Player;
 import org.eclipse.jetty.websocket.api.Session;
 
-class PlayGame {
+public class PlayGame {
 
   private static final int PORT_NUMBER = 8080;
   private static Javalin app;
@@ -37,7 +37,11 @@ class PlayGame {
     
     // Start game, creating player 1 and game board.
     app.post("/startgame", ctx -> {
-      char type1 = ctx.req.getParameter("type").charAt(0);
+      //char type1 = ctx.req.getParameter("type").charAt(0);
+      String body = ctx.body();
+      String type = body.replaceFirst(".*=", "");
+      char type1 = type.charAt(0);
+      
       Player p1 = new Player(type1, 1);
       game = new GameBoard(p1);
       ctx.result(game.getBoard());

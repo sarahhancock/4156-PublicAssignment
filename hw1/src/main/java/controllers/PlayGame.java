@@ -25,11 +25,6 @@ public class PlayGame {
       config.addStaticFiles("/public");
     }).start(PORT_NUMBER);
 
-    // Test Echo Server
-    app.post("/echo", ctx -> {
-      ctx.result(ctx.body());
-    });
-
     // Redirect to tic tac toe board.
     app.get("/newgame", ctx -> {
       ctx.redirect("/tictactoe.html");
@@ -62,11 +57,11 @@ public class PlayGame {
       sendGameBoardToAllPlayers(game.getBoard());
     });
     
-    
     // Player 1 moves.
     app.post("/move/1", ctx -> {
-      int x = Integer.parseInt(ctx.req.getParameter("x"));
-      int y = Integer.parseInt(ctx.req.getParameter("y"));
+      String body = ctx.body();
+      int x = Character.getNumericValue(body.charAt(2));
+      int y = Character.getNumericValue(body.charAt(6));
       Move move = new Move(game.getP1(), x, y);
       Message message = game.move(move);
       ctx.result(message.getMessage());
@@ -76,8 +71,9 @@ public class PlayGame {
     
     // Player 2 moves.
     app.post("/move/2", ctx -> {
-      int x = Integer.parseInt(ctx.req.getParameter("x"));
-      int y = Integer.parseInt(ctx.req.getParameter("y"));
+      String body = ctx.body();
+      int x = Character.getNumericValue(body.charAt(2));
+      int y = Character.getNumericValue(body.charAt(6));
       Move move = new Move(game.getP2(), x, y);
       Message message = game.move(move);
       ctx.result(message.getMessage());

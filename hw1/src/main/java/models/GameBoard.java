@@ -168,14 +168,15 @@ public class GameBoard {
    * isDraw variable to true.
    */
   public void checkDraw() {
+    isDraw = true;
     for (int i = 0; i < 3; i++) {
       for (int j = 0; j < 3; j++) {
         if (boardState[i][j] == 0) {
+          isDraw = false;
           return;
         }
       }
     }
-    isDraw = true;
   }
 
 }

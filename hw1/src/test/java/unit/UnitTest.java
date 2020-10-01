@@ -1,31 +1,19 @@
 package unit;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.google.gson.Gson;
-import controllers.PlayGame;
-import kong.unirest.GetRequest;
-import kong.unirest.HttpResponse;
-import kong.unirest.Unirest;
 import kong.unirest.json.JSONObject;
 import models.GameBoard;
 import models.Message;
 import models.Move;
 import models.Player;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class UnitTest {
 
   @Test
   public void testStartGame() {
-	  
     Player p1 = new Player('X', 1);
     GameBoard game = new GameBoard(p1);
     Player p2 = new Player('O', 2);
@@ -45,11 +33,11 @@ public class UnitTest {
   
   @Test
   public void testfirstMove() {
-	Player p1 = new Player('X', 1);
-	GameBoard game = new GameBoard(p1);
-	Player p2 = new Player('O', 2);
-	game.addP2(p2);
-    
+    Player p1 = new Player('X', 1);
+    GameBoard game = new GameBoard(p1);
+    Player p2 = new Player('O', 2);
+    game.addP2(p2);
+    game.startGame();
 
     // Check if player 2 can make the first move
     Move move = new Move(p2, 2, 1);
@@ -57,7 +45,8 @@ public class UnitTest {
     String board = game.getBoard();
     JSONObject jsonObject = new JSONObject(board);
     board = jsonObject.get("boardState").toString();
-    String expected = "[[\"\\u0000\",\"\\u0000\",\"\\u0000\"],[\"\\u0000\",\"\\u0000\",\"\\u0000\"],[\"\\u0000\",\"\\u0000\",\"\\u0000\"]]";
+    String expected = "[[\"\\u0000\",\"\\u0000\",\"\\u0000\"],"
+            + "[\"\\u0000\",\"\\u0000\",\"\\u0000\"],[\"\\u0000\",\"\\u0000\",\"\\u0000\"]]";
     assertEquals(expected, board);
     
     // Check if player 1 can make the first move
@@ -66,7 +55,8 @@ public class UnitTest {
     board = game.getBoard();
     jsonObject = new JSONObject(board);
     board = jsonObject.get("boardState").toString();
-    expected = "[[\"\\u0000\",\"\\u0000\",\"\\u0000\"],[\"\\u0000\",\"\\u0000\",\"\\u0000\"],[\"\\u0000\",\"X\",\"\\u0000\"]]";
+    expected = "[[\"\\u0000\",\"\\u0000\",\"\\u0000\"],"
+            + "[\"\\u0000\",\"\\u0000\",\"\\u0000\"],[\"\\u0000\",\"X\",\"\\u0000\"]]";
     assertEquals(expected, board);
   }
     
@@ -77,12 +67,14 @@ public class UnitTest {
     GameBoard game = new GameBoard(p1);
     Player p2 = new Player('O', 2);
     game.addP2(p2);    
+    game.startGame();
     Move move = new Move(p1, 2, 1);
     game.move(move);
     String board = game.getBoard();
     JSONObject jsonObject = new JSONObject(board);
     board = jsonObject.get("boardState").toString();
-    String expected = "[[\"\\u0000\",\"\\u0000\",\"\\u0000\"],[\"\\u0000\",\"\\u0000\",\"\\u0000\"],[\"\\u0000\",\"X\",\"\\u0000\"]]";
+    String expected = "[[\"\\u0000\",\"\\u0000\",\"\\u0000\"],"
+            + "[\"\\u0000\",\"\\u0000\",\"\\u0000\"],[\"\\u0000\",\"X\",\"\\u0000\"]]";
     assertEquals(expected, board);
     move = new Move(p1, 1, 0);
     game.move(move);
@@ -92,15 +84,6 @@ public class UnitTest {
     assertEquals(expected, board);
   }
     
-//    // Check if player 2 can move
-//    move = new Move(p2, 1, 0);
-//    game.move(move);
-//    board = game.getBoard();
-//    jsonObject = new JSONObject(board);
-//    board = jsonObject.get("boardState").toString();
-//    expected = "[[\"\\u0000\",\"\\u0000\",\"\\u0000\"],[\"O\",\"\\u0000\",\"\\u0000\"],[\"\\u0000\",\"X\",\"\\u0000\"]]";
-//    assertEquals(expected, board);
-    
   @Test
   public void testInvalidMove() {
     // Check if player move in the same spot
@@ -108,6 +91,7 @@ public class UnitTest {
     GameBoard game = new GameBoard(p1);
     Player p2 = new Player('O', 2);
     game.addP2(p2);
+    game.startGame();
     Move move = new Move(p1, 1, 0);
     game.move(move);
     move = new Move(p2, 1, 0);
@@ -115,9 +99,25 @@ public class UnitTest {
     String board = game.getBoard();
     JSONObject jsonObject = new JSONObject(board);
     board = jsonObject.get("boardState").toString();
-    String expected = "[[\"\\u0000\",\"\\u0000\",\"\\u0000\"],[\"X\",\"\\u0000\",\"\\u0000\"],[\"\\u0000\",\"\\u0000\",\"\\u0000\"]]";
+    String expected = "[[\"\\u0000\",\"\\u0000\",\"\\u0000\"],"
+            + "[\"X\",\"\\u0000\",\"\\u0000\"],[\"\\u0000\",\"\\u0000\",\"\\u0000\"]]";
     assertEquals(expected, board);
   }    
+  
+  @Test
+  public void testMessage() {
+    // Check if player can win
+    Player p1 = new Player('X', 1);
+    GameBoard game = new GameBoard(p1);
+    Player p2 = new Player('O', 2);
+    game.startGame();
+    game.addP2(p2);
+    Move move = new Move(p1, 0, 0);
+    Message msg = game.move(move);
+    assertEquals(msg.getMoveValidity(), true);
+    assertEquals(msg.getCode(), 100);
+    assertEquals(msg.getMessageBody(), "");
+  }
     
   @Test
   public void testWinVertical() {
@@ -125,6 +125,7 @@ public class UnitTest {
     Player p1 = new Player('X', 1);
     GameBoard game = new GameBoard(p1);
     Player p2 = new Player('O', 2);
+    game.startGame();
     game.addP2(p2);
     Move move = new Move(p1, 0, 0);
     game.move(move);
@@ -140,7 +141,6 @@ public class UnitTest {
     assertEquals("0", winner);
     move = new Move(p1, 2, 0);
     game.move(move);
-   
     board = game.getBoard();
     jsonObject = new JSONObject(board);
     winner = jsonObject.get("winner").toString();
@@ -154,6 +154,7 @@ public class UnitTest {
     GameBoard game = new GameBoard(p1);
     Player p2 = new Player('O', 2);
     game.addP2(p2);
+    game.startGame();
     Move move = new Move(p1, 0, 0);
     game.move(move);
     move = new Move(p2, 1, 1);
@@ -182,6 +183,7 @@ public class UnitTest {
     GameBoard game = new GameBoard(p1);
     Player p2 = new Player('O', 2);
     game.addP2(p2);
+    game.startGame();
     Move move = new Move(p1, 0, 0);
     game.move(move);
     move = new Move(p2, 0, 1);
@@ -210,6 +212,7 @@ public class UnitTest {
     GameBoard game = new GameBoard(p1);
     Player p2 = new Player('O', 2);
     game.addP2(p2);
+    game.startGame();
     Move move = new Move(p1, 0, 2);
     game.move(move);
     move = new Move(p2, 0, 1);
@@ -238,6 +241,7 @@ public class UnitTest {
     GameBoard game = new GameBoard(p1);
     Player p2 = new Player('O', 2);
     game.addP2(p2);
+    game.startGame();
     Move move = new Move(p1, 0, 0);
     game.move(move);
     move = new Move(p2, 0, 2);
@@ -269,7 +273,6 @@ public class UnitTest {
   
   @Test
   public void testGameBoardGettersSetters() {
-    // Test miscellanous gameboard methods
     Player p1 = new Player('X', 1);
     GameBoard game = new GameBoard(p1);
     Player p2 = new Player('O', 2);

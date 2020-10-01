@@ -31,5 +31,16 @@ public class Message {
     String json = gson.toJson(this);
     return json;
   }
-
+  
+  public boolean getMoveValidity() {
+    return moveValidity;
+  }
+  
+  public int getCode() {
+    return code;
+  }
+  
+  public String getMessageBody() {
+    return message;
+  }
 }

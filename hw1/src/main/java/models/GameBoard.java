@@ -75,18 +75,31 @@ public class GameBoard {
     Player p = move.getPlayer();
     int x = move.getMoveX();
     int y = move.getMoveY();
+    if (winner != 0) {
+      message = new Message(false, 400, 
+              String.format("Player %d has already won the game!", winner));
+      return message;
+    }
+    if (isDraw) {
+      message = new Message(false, 400, "The game has already ended!");
+      return message;
+    }
     if (boardState[x][y] == 0) {
-      if (p.getId() == turn) {
-        boardState[x][y] = p.getType();
-        if (turn == 1) {
-          turn = 2;
+      if (gameStarted) {
+        if (p.getId() == turn) {
+          boardState[x][y] = p.getType();
+          if (turn == 1) {
+            turn = 2;
+          } else {
+            turn = 1;
+          }
+          message = new Message(true, 100, "");
+          this.checkWin(p, x, y);
         } else {
-          turn = 1;
+          message = new Message(false, 400, String.format("It's Player %d's turn!", turn));
         }
-        message = new Message(true, 100, "");
-        this.checkWin(p, x, y);
       } else {
-        message = new Message(false, 400, String.format("It's Player %d's turn!", turn));
+        message = new Message(false, 400, "Must have 2 players");
       }
     } else {
       message = new Message(false, 400, "Invalid move!");
